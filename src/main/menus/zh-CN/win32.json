@@ -14,7 +14,7 @@
         "label": "编辑",
         "id": "menu.edit",
         "submenu": [
-          { "label": "清空", "id": "edit.undo", "accelerator": "Shift+CmdOrCtrl+W" },
+          { "label": "清空", "id": "edit.undo", "accelerator": "Shift+CmdOrCtrl+W"},
           { "label": "撤销", "id": "edit.undo", "accelerator": "CmdOrCtrl+Z", "role": "undo" },
           { "label": "重做", "id": "edit.redo", "accelerator": "Shift+CmdOrCtrl+Z", "role": "redo" }
         ]

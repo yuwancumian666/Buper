@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow } from 'electron'
 import Application from './Application'
 import path from 'path'
 /**
@@ -63,56 +63,6 @@ function init () {
     // }
     global.mainWindow = global.application.showPage('index')
   });
-
-  /**
-   * 文件拖拽
-  ipcMain.on('dragenter', (event, filepath) => {
-    const iconName = 'drag.png';
-    console.log(path.join(__dirname, iconName)); // src\main\drag.png
-    console.log(filepath);  // src\renderer\components\MainPage.vue?vue&type=script&lang=js&
-    event.sender.startDrag({
-      file: filepath,
-      icon: path.join(__dirname, iconName),
-    })
-  });
-  */
-  /*
-  * https://electronjs.org/docs/api/dialog
-  * 在 Windows 和 Linux 上, 打开对话框不能同时是文件选择器和目录选择器,
-  * 因此如果在这些平台上将 properties 设置为["openFile"、"openDirectory"],
-  * 则将显示为目录选择器。
-  * */
-  ipcMain.on('open-file-dialog', (event) => {
-    dialog.showOpenDialog({
-      filters: [
-        { name: '图片', extensions: ['jpg', 'png', 'jpeg', 'ico']}
-      ],
-      properties: ['openFile', 'multiSelections', 'showHiddenFiles']
-    }, (files) => {
-      if (files) {
-        event.sender.send('selected-file', files)
-      }
-    });
-  });
-
-  ipcMain.on('open-directory-dialog', (event) => {
-    dialog.showOpenDialog({
-      properties: ['openDirectory']
-    }, (files) => {
-      if (files) {
-        event.sender.send('selected-directory', files)
-      }
-    })
-  });
-
-  ipcMain.on('fuckDrop', (event, files) => {
-    console.log("fuck drop");
-    files.forEach((file) => {
-      console.log(typeof file, file)
-    });
-    event.sender.send('dropFuck', files);
-  })
-
 }
 
 init();

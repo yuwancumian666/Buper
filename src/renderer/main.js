@@ -9,6 +9,10 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI);
 
+// import variables_ from './components/Global/variables'
+// Vue.prototype.VAR = variables_;
+// import methods from './components/Global/methods'
+// Vue.use(methods);
 
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'));

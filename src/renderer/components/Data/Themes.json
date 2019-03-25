@@ -1,0 +1,41 @@
+{
+  "theme-dark": [
+    {"background": "#F8F9F9"},
+    {"menu": "#262525"},
+    {"menu-hover": "#"},
+    {"menu-click-border": "bootstrap-default"},
+    {"sub-menu": "#EAECEE"},
+    {"sub-menu-hover": "bootstrap-default"},
+    {"sub-menu-click-border": "bootstrap-default"},
+    {"btn-tooltip": "default-dark"},
+    {"gallery-tip-font": "#CCC"},
+    {"gallery-tip-btn-font": "#CCC"},
+    {"gallery-tip-border": "#A3E4D7"},
+    {"gallery-tip-hover-bg": "#EAEDED"},
+    {"card": ".bg-light"},
+    {"card-hover-shadow-before": "rgba(0,0,0,0.3)"},
+    {"card-hover-shadow-after": "rgba(0,0,0,0.55)"},
+    {"card-header-smile": ".text-success"},
+    {"card-header-meh": ".text-warning"},
+    {"card-header-save-hover": "#A569BD"},
+    {"card-header-close-hover": "#C2185B"}
+  ],
+  "theme-pink": [
+    {"background": "#fdffdc"},
+    {"menu": "#C54C82"},
+    {"sub-menu": "#f781bc"},
+    {"card": ".bg-light"},
+    {"gallery-tip-hover-bg": "#ffe6eb"},
+
+  ],
+  "theme-blue": [
+    {"background": "#F8F9F9"},
+    {"menu": "#262525"},
+    {"sub-menu": "#EAECEE"},
+    {"card": ".bg-light"}
+  ],
+  "summer": [],
+  "girl": [],
+  "winter": [],
+  "winter-tree": [],
+}

@@ -15,7 +15,7 @@
                 window.addEventListener('drop', this.disableDrag)
             },
             disableDrag (e) {
-                const dropzone = document.getElementById('drop-area'); // 这个是可拖拽的上传区
+                const dropzone = document.getElementById('gallery'); // 这个是可拖拽的上传区
                 if (dropzone === null || !dropzone.contains(e.target)) {
                     e.preventDefault();
                     e.dataTransfer.effectAllowed = 'none';
