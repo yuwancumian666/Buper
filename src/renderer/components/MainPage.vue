@@ -2,17 +2,21 @@
   <div id="wrapper">
     <div id="menu">
       <!-- 上方按钮组 -->
-      <div id="top-group" class="btn-group-vertical" role="group" aria-label="Button group with nested dropdown">
-        <button type="button" class="btn btn-dark top-btn" disabled>
-          <i class="fa fa-picture-o" aria-hidden="true"></i>
-        </button>
-        <button type="button" class="btn btn-dark top-btn">
-          <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-        </button>
-        <button type="button" class="btn btn-dark top-btn">
-          <i class="fa fa-area-chart" aria-hidden="true"></i>
-        </button>
+      <div id="top-group" class="btn-group-vertical btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-dark active" @click="toGallery">
+          <input type="radio" name="options" id="option1" autocomplete="off" checked>
+          <i class="fa fa-picture-o fa-lg" aria-hidden="true"></i>
+        </label>
+        <label class="btn btn-dark" @click="toEditor">
+          <input type="radio" name="options" id="option2" autocomplete="off"> 
+          <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>
+        </label>
+        <label class="btn btn-dark" @click="toChart">
+          <input type="radio" name="options" id="option3" autocomplete="off"> 
+          <i class="fa fa-area-chart fa-lg" aria-hidden="true"></i>
+        </label>
       </div>
+
       <!-- 下方按钮组：设置&关于 -->
       <div id="btm-group" class="btn-group-vertical" role="group">
         <button type="button" class="btn btn-dark btm-btn">
@@ -24,55 +28,43 @@
       </div>
     </div>
     <!--相册 含菜单-->
-    <gallery/>
+    <!-- <gallery/> -->
+    <!-- 路由一下 -->
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
   import $ from 'jquery'
-  import 'popper.js'
-  import 'bootstrap'
-  import Vue from 'vue';
+  import Vue from 'vue'
+  import { router, VueRouter } from 'vue-router'
+  const ipcRenderer = require('electron')
+  
 
-  import Gallery from "./Gallery/Gallery.vue"
-  const { ipcRenderer } = require('electron');
+  // import Gallery from "./Gallery/Index.vue"
+  // import Editor from "./Editor/Index.vue"
+  // import Chart from "./Chart/Index.vue"
 
   export default {
     name: 'main-page',
-    components: {
-      Gallery
-    },
-    data() {
-      return {
-        // dragTipSeenFlag: this.dragTipSeenFlag,
-        // cardHeaderCheck: this.cardHeaderCheck,
-        // cardIndex: this.cardIndex,
-        // imageArray: this.imageArray
-      }
-    },
     methods: {
-      handleOpen(key, keyPath) {
-        console.log(key, path);
+      handleChange(key, keyPath) {
+        console.log(key, keyPath);
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
       },
-      imageArrayIsNull() {
-        return Object.keys(this.imageArray).length === 0
+      toGallery() {
+        this.$router.push({path: '/gallery'})
       },
-
-      // unique(array) {
-      //   /*数组去重*/
-      //   return array.concat().sort().filter(function(item, index, array){
-      //     return !index || item !== array[index - 1]
-      //   })
-      // },
-   },
+      toEditor() {
+        this.$router.push({path: '/editor'})
+      },
+      toChart() {
+        this.$router.push({path: '/chart'})
+      },
+    }
   }
-
-  $(function () {
-    $("[data-toggle='tooltip']").tooltip({html: true});
-  });
 </script>
 
 <style>
@@ -87,40 +79,53 @@
     background-color: #F8F9F9;
     -webkit-app-region: no-drag;
   }
-
-  .btn{
-    border: 0;
-    line-height: 58px;
+  ::-webkit-scrollbar {
+    /* 隐藏滚动条，马勒个比 */
+	  width: 0px;
   }
 
   #menu {
     position: fixed;
-    background-color: #262525;
+    background-color: #343a40; /*#262525*/
     width: 50px;
     float: left;
     height: 100%;
+    z-index: 2;
   }
   #top-group {
+    width: 100%
+  }
 
-  }
-  #top-group > button {
-    /*主菜单栏-上方：相册、编辑、图表 按钮的宽高和字体大小*/
-    background-color: #262525;
-    width: 50px;
-    height: 70px;
-    font-size: 22px;
-  }
   #btm-group {
     position: absolute;
     bottom: 0;
   }
   #btm-group > button {
     /*主菜单栏-下方：设置、关于 按钮的宽高和字体大小*/
-    background-color: #262525;
+    background-color: #343a40;
     width: 50px;
     height: 70px;
     font-size: 22px;
    }
+
+  .btn{
+    border: 0;
+    line-height: 58px;
+  }
+  .btn:focus,.btn:active {
+    /*去掉按钮的边框阴影*/
+   outline: none !important;
+   box-shadow: none;
+  }
+  label.btn.focus {
+   /**去掉单选按钮的边框阴影 https://stackoverflow.com/questions/49698698/accessing-bootstrap-radio-buttons */
+   background-color: #F8F9F9;
+   box-shadow: none;
+  }
+  .btn-dark:not(:disabled):not(.disabled).active {
+    color: #448AFF;
+    background-color: #1d2114;
+  }
 
 </style>
 

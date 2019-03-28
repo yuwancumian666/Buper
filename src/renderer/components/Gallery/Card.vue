@@ -29,18 +29,18 @@
   <!--</div>-->
   <!--</div>-->
   <transition-group name="list-complete" tag="div">
-    <div v-for="(value, key) in image_array"
-         v-bind:key="'key'+value"
+    <div v-for="image in images"
+         :key="image.id"
          class="card bg-light list-complete-item"
-         v-bind:id="'card_'+value"
+         v-bind:id="'card_'+image.id"
     >
       <div class="card-header bg-transparent border-success">
         <div class="card-header-check">
           <el-tooltip class="item" effect="dark" content="已处理" placement="bottom">
-            <i class="fa fa-smile-o text-success" aria-hidden="true" v-show="cardHeaderCheck"></i>
+            <i class="fa fa-smile-o text-success" aria-hidden="true" v-show="image.done"></i>
           </el-tooltip>
           <el-tooltip class="item" effect="dark" content="未处理" placement="bottom">
-            <i class="fa fa-meh-o text-warning" aria-hidden="true" v-show="!cardHeaderCheck"></i>
+            <i class="fa fa-meh-o text-warning" aria-hidden="true" v-show="!image.done"></i>
           </el-tooltip>
         </div>
         <div class="card-header-save">
@@ -50,7 +50,7 @@
         </div>
         <div class="card-header-close" @click="removeCard($event)">&times;</div>
       </div>
-      <img class="card-img" v-bind:src="key" alt="Card image">
+      <img class="card-img" v-bind:src="image.src" alt="Card image">
     </div>
   </transition-group>
 </template>
@@ -58,35 +58,26 @@
 <script>
   import $ from 'jquery'
   import Vue from 'vue'
+  import { mapState ,mapActions } from 'vuex'
   export default {
     name: "card",
-    data() {
-      return {
-        cardHeaderCheck: false,
-      }
+    computed: {
+      ...mapState('image', {
+        images: state => state.images
+      })
     },
-    props: ['image_array', 'drag_tip_seen_flag'],
+    props:['tip_flag'],
     methods: {
+      ...mapActions([]),
       removeCard(event) {
-        console.log('removeCard');
         let cardId = $(event.currentTarget).parent().parent().attr('id');
         let index = Number(cardId.split('_')[1]);
         console.log(index);
-        /**
-         * TODO 获取到card的id了，找到image_array中对应的url，然后删除。
-         * 需要注意的是：应该把image_array换成json（也可能不需要，应该需要），
-         * 方便更新列表，反正注意id和image_array中的url一一对应，因为要是删除一个，
-         * 后边的url会挤到前边导致错位。
-         */
-        Object.keys(this.image_array).forEach((key) => {
-          if (this.image_array[key] === index) {
-            Vue.delete(this.image_array, key);
-            this.$emit('get_image_array', this.image_array)
-          }
-          if (Object.keys(this.image_array).length === 0) {
-            this.$emit('get_drag_tip_seen_flag', true)
-          }
-        })
+        this.$store.dispatch('image/deleteImageById', index)
+        if (this.images.length === 0) {
+          this.$emit('get_tip_flag', true)
+          // this.$store.dispatch('image/setTipFlag', false)
+        }
       },
     }
   }

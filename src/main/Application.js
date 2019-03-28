@@ -1,6 +1,7 @@
 import { app, ipcMain, dialog } from 'electron';
 import { EventEmitter } from 'events';
 import fs from 'fs'
+import path from 'path'
 
 import MenuManager from './ui/MenuManager'
 import WindowManager from './ui/WindowManager';
@@ -100,10 +101,10 @@ export default class Application extends EventEmitter {
     });
 
     ipcMain.on('filter-file-type', (event, files) => {
-      let fileList = []
-      let pathList = []
+      let fileList = [];
+      let pathList = [];
       for (let index in files) {
-        let file = files[index]
+        let file = files[index];
         if (fs.statSync(file).isFile()) {  // 过滤两种“文件类型”，“文件”和“目录”
           fileList.push(file)
         } else if (fs.statSync(file).isDirectory()) {
@@ -113,5 +114,10 @@ export default class Application extends EventEmitter {
       fileList = fileList.concat(filterFileFromDir(pathList));
       event.sender.send('filtered-file-type', fileList);
     });
+
+    ipcMain.on('read-image', (event, dir) => {
+      let imageData = fs.readFileSync(dir);
+      event.sender.send('base64-image', imageData.toString('base64'));
+    })
   }
 }

@@ -1,12 +1,12 @@
 {
   "theme-dark": [
     {"background": "#F8F9F9"},
-    {"menu": "#262525"},
-    {"menu-hover": "#"},
-    {"menu-click-border": "bootstrap-default"},
-    {"sub-menu": "#EAECEE"},
+    {"menu-bg": "#343a40"},
+    {"top-menu-hover-bg": "#1d2114"},
+    {"top-menu-active-bg": "#1d2114"},
+    {"top-menu-active-font": "#448AFF"},
+    {"sub-menu-bg": "#EAECEE"},
     {"sub-menu-hover": "bootstrap-default"},
-    {"sub-menu-click-border": "bootstrap-default"},
     {"btn-tooltip": "default-dark"},
     {"gallery-tip-font": "#CCC"},
     {"gallery-tip-btn-font": "#CCC"},

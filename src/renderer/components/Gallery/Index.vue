@@ -41,7 +41,7 @@
       <!--阻止拖入的浏览器默认行为-->
       <!--阻止拖来拖去的浏览器默认行为-->
       <!--阻止离开时的浏览器默认行为-->
-      <div id="gallery-tip" v-show="dragTipSeenFlag">
+      <div id="gallery-tip" v-show="tipFlag">
         <div id="tip">
           拖入图片或打开
           <button type="button" class="btn btn-link gallery-tip-btn" @click="addFile" >文件</button><span>/</span><button type="button" class="btn btn-link gallery-tip-btn" @click="addDirectory" >目录</button>
@@ -49,10 +49,8 @@
       </div>
       <!--卡片组-->
       <card
-          :image_array="imageArray"
-          @get_image_array="getImageArray"
-          :drag_tip_seen_flag.sync="dragTipSeenFlag"
-          @get_drag_tip_seen_flag="getDragTipSeenFlag"
+        :tip_flag="tipFlag"
+        @get_tip_flag="getTipFlag"
       />
     </div>
   </div>
@@ -62,7 +60,8 @@
   import 'jquery'
   import Vue from 'vue'
   import Card from "./Card"
-  const {ipcRenderer} = require('electron');
+  import {mapState, mapActions, mapGetters} from 'vuex';
+  const {ipcRenderer} = require('electron')
 
   export default {
     name: "gallery",
@@ -71,82 +70,94 @@
     },
     data() {
       return {
-        dragTipSeenFlag: true,
-        showCard: true,
-        cardIndex: 0,
-        cardImgSrc: "",
-        imageArray: {},
+        cardId: 0,
+        tipFlag: true,
+        cacheList: [],
         fileType: ['jpg', 'JPG', 'Jpg', 'png', 'PNG', 'jpeg', 'Jpeg', 'ico', 'ICO', 'gif'],
       }
     },
+    computed:{
+      // tipFlag () {  // 返回的值不符合预期，总是他妈的瞎返回flag，傻逼程序
+      //   return this.$store.state.image.tipFlag;
+      // }
+    },
     methods: {
-      // 从子组件获取更改后的变量
-      getImageArray(imagearray) {
-        this.imageArray = imagearray;
+      getTipFlag(flag) {
+        this.tipFlag = flag
       },
-      getDragTipSeenFlag(dragtipseenflag) {
-        this.dragTipSeenFlag = dragtipseenflag;
-      },
-      // 本地函数
       addFile() {
+        /** 这里添加src的时候会有重复，具体表现为：
+         * 第一次打开对话框选择一个图片，会有一个src进来
+         * 再打开对话框选择一个，会进来两个相同的，再打开会有三个
+         * 尝试了N种方法，仍然找不到原因。
+         * https://stackoverflow.com/questions/52111151/node-on-method-firing-too-many-times
+         */
         ipcRenderer.send('open-file-dialog');
-        ipcRenderer.on('selected-file', (event, files) => {
-          // console.log("openFileDialog: ", typeof path);  // path: object Buter & Buper
+        ipcRenderer.once('selected-file', (event, files) => {
           if (files.length !== 0) {
-            this.dragTipSeenFlag = false;
+            this.tipFlag = false
+            // this.$store.dispatch('image/setTipFlag', false)
           }
-          files.forEach((src) => {
-            /**
-             * imageArray使用对象的一点好处：
-             * 这里添加src的时候会有重复，具体表现为：
-             * 第一次打开对话框选择一个图片，会有一个src进来
-             * 再打开对话框选择一个，会进来两个相同的，再打开会有三个
-             * 尝试了N种方法，仍然找不到原因。
-             *  */ 
-            Vue.set(this.imageArray, src, this.cardIndex);
-            this.cardIndex ++;
+          files.forEach((file) => {
+            if (this.cacheList.indexOf(file) === -1) {
+              this.$store.dispatch('image/addImage', {
+              id: this.cardId,
+              src: file,
+              flag: false
+            })
+            this.cacheList.push(file)
+            this.cardId ++;
+            }
           });
         });
-        console.log("我有几个女人？", this.imageArray);
       },
+
       addDirectory(){
         ipcRenderer.send('open-directory-dialog');
         ipcRenderer.on('selected-directory', (event, files) => {
           if (files.length !== 0) {
-            this.dragTipSeenFlag = false;
+            this.tipFlag = false;
           }
-          // console.log(files);
           files.forEach((src) => {
-            if (this.fileType.indexOf(src.split('.').pop()) > -1) {
-              console.log(src);
-              Vue.set(this.imageArray, src, this.cardIndex);
-              this.cardIndex ++;
+            if (this.fileType.indexOf(src.split('.').pop()) > -1 && this.cacheList.indexOf(src) === -1) {
+              this.$store.dispatch('image/addImage', {
+              id: this.cardId,
+              src: src,
+              flag: false
+            })
+            this.cacheList.push(src)
+            this.cardId ++;
             }
           });
         })
       },
       drop(event) {
-        console.log("method-drop");
+        // console.log("method-drop");
         const data = event.dataTransfer.files;  // 获取文件对象
-        let fileList = []
+        let fileList = [];
         for (let file in data) {
           if (data[file]['path']) {  // 过滤有undefined的数据，该数据来源不明
             fileList.push(data[file]['path'])
           }
         }
-        console.log(typeof fileList)
-        console.log(fileList)
+        // console.log(typeof fileList);
+        // console.log(fileList);
         ipcRenderer.send('filter-file-type', fileList);
-        ipcRenderer.on('filtered-file-type', (event, files) => {
+        ipcRenderer.once('filtered-file-type', (event, files) => {
           files.forEach((src) => {
             if (src) {
-              if (this.fileType.indexOf(src.split('.').pop()) > -1) {
-                Vue.set(this.imageArray, src, this.cardIndex);
-                this.cardIndex ++;
+              if (this.fileType.indexOf(src.split('.').pop()) > -1 && this.cacheList.indexOf(src) === -1) {
+                this.$store.dispatch('image/addImage', {
+                  id: this.cardId,
+                  src: src,
+                  flag: false
+                })
+                this.cacheList.push(src)
+                this.cardId ++;
                 // 之所以把这个flag放到这里而不是循环外，
                 // 是因为只有图像格式的文件才能进入这个if，
                 // 只有这样才能把拖拽提示文字去掉。
-                this.dragTipSeenFlag = false;
+                this.tipFlag = false;
               }
             }
           })
@@ -154,12 +165,11 @@
       },
       clearGallery() {
         //清空相册
-        console.log("clear gallery");
-        this.imageArray = {};
-        this.dragTipSeenFlag = true;
+        this.$store.dispatch('image/clearImages');
+        // this.setDragTipSeenFlag(true);
         this.cardIndex = 0;
       },
-    }
+    },
   }
 </script>
 
@@ -220,11 +230,16 @@
     font: 25px "等线";
     color: #ccc;
   }
+  .gallery-tip-btn:hover {
+    color: cornflowerblue
+  }
   #gallery {
     /*相册样式：主要设置图片和周围有个缝隙*/
     position: absolute;
+    float: left;
     top: 52px;
-    left: 60px;
-    right: 0;
+    left: 65px;
+    padding-right: 20px;
+    /* box-sizing: border-box; */
   }
 </style>
