@@ -11,10 +11,10 @@
         </button>
         <button type="button" class="btn btn-light sub-menu-btn" @click="addDirectory">
           <el-tooltip class="item" effect="dark" content="添加目录" placement="bottom">
-            <i class="fa fa-folder-open-o" aria-hidden="true"></i>
+            <!-- <img src="../../assets/folder.svg" /> -->
+            <i class="fa fa-folder-o" aria-hidden="true"></i>
           </el-tooltip>
         </button>
-
         <div class="btn-group" role="group">
           <button type="button" class="btn btn-light dropdown-toggle sub-menu-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-download" aria-hidden="true"></i>
@@ -29,6 +29,22 @@
             <i class="fa fa-trash" aria-hidden="true"></i>
           </el-tooltip>
         </button>
+        <button type="button" class="btn btn-light sub-menu-btn" @click="unsplash">
+          <el-tooltip class="item" effect="dark" content="Unsplash" placement="bottom">
+            <i class="fa fa-slack" aria-hidden="true"></i>
+            <!-- <img src="~@/assets/unsplash.svg"/> -->
+          </el-tooltip>
+        </button>
+        <button type="button" class="btn btn-light sub-menu-btn" v-show="!isRunning" @click="start">
+          <el-tooltip class="item" effect="dark" content="开始" placement="bottom">
+            <i class="fa fa-play" aria-hidden="true"></i>
+          </el-tooltip>
+        </button>
+        <button type="button" class="btn btn-light sub-menu-btn" v-show="isRunning" @click="stop">
+          <el-tooltip class="item" effect="dark" content="停止" placement="bottom">
+            <i class="fa fa-spinner fa-spin fa-fw"></i>
+          </el-tooltip>
+        </button>
       </div>
     </div>
 
@@ -41,17 +57,14 @@
       <!--阻止拖入的浏览器默认行为-->
       <!--阻止拖来拖去的浏览器默认行为-->
       <!--阻止离开时的浏览器默认行为-->
-      <div id="gallery-tip" v-show="tipFlag">
+      <div id="gallery-tip" v-show="isImageNull">
         <div id="tip">
           拖入图片或打开
           <button type="button" class="btn btn-link gallery-tip-btn" @click="addFile" >文件</button><span>/</span><button type="button" class="btn btn-link gallery-tip-btn" @click="addDirectory" >目录</button>
         </div>
       </div>
       <!--卡片组-->
-      <card
-        :tip_flag="tipFlag"
-        @get_tip_flag="getTipFlag"
-      />
+      <card/>
     </div>
   </div>
 </template>
@@ -59,9 +72,10 @@
 <script>
   import 'jquery'
   import Vue from 'vue'
-  import Card from "./Card"
+  import Unsplash, {toJson} from 'unsplash-js'
   import {mapState, mapActions, mapGetters} from 'vuex';
   const {ipcRenderer} = require('electron')
+  import Card from "./Card"
 
   export default {
     name: "gallery",
@@ -71,42 +85,36 @@
     data() {
       return {
         cardId: 0,
-        tipFlag: true,
         cacheList: [],
         fileType: ['jpg', 'JPG', 'Jpg', 'png', 'PNG', 'jpeg', 'Jpeg', 'ico', 'ICO', 'gif'],
+        isRunning: false,
       }
     },
     computed:{
       // tipFlag () {  // 返回的值不符合预期，总是他妈的瞎返回flag，傻逼程序
       //   return this.$store.state.image.tipFlag;
       // }
+      ...mapState('image', {
+        images: state => state.images,
+        crop_info: state => state.crop_info
+      }),
+      isImageNull() {
+        return this.images.length === 0
+      }
     },
     methods: {
-      getTipFlag(flag) {
-        this.tipFlag = flag
-      },
       addFile() {
-        /** 这里添加src的时候会有重复，具体表现为：
-         * 第一次打开对话框选择一个图片，会有一个src进来
-         * 再打开对话框选择一个，会进来两个相同的，再打开会有三个
-         * 尝试了N种方法，仍然找不到原因。
-         * https://stackoverflow.com/questions/52111151/node-on-method-firing-too-many-times
-         */
         ipcRenderer.send('open-file-dialog');
         ipcRenderer.once('selected-file', (event, files) => {
-          if (files.length !== 0) {
-            this.tipFlag = false
-            // this.$store.dispatch('image/setTipFlag', false)
-          }
           files.forEach((file) => {
             if (this.cacheList.indexOf(file) === -1) {
               this.$store.dispatch('image/addImage', {
-              id: this.cardId,
-              src: file,
-              flag: false
-            })
-            this.cacheList.push(file)
-            this.cardId ++;
+                id: this.cardId,
+                src: file,
+                done: true
+              })
+              this.cacheList.push(file)
+              this.cardId ++;
             }
           });
         });
@@ -115,24 +123,21 @@
       addDirectory(){
         ipcRenderer.send('open-directory-dialog');
         ipcRenderer.on('selected-directory', (event, files) => {
-          if (files.length !== 0) {
-            this.tipFlag = false;
-          }
           files.forEach((src) => {
             if (this.fileType.indexOf(src.split('.').pop()) > -1 && this.cacheList.indexOf(src) === -1) {
               this.$store.dispatch('image/addImage', {
-              id: this.cardId,
-              src: src,
-              flag: false
-            })
-            this.cacheList.push(src)
-            this.cardId ++;
+                id: this.cardId,
+                src: src,
+                flag: false
+              })
+              this.cacheList.push(src)
+              this.cardId ++;
             }
           });
         })
       },
+
       drop(event) {
-        // console.log("method-drop");
         const data = event.dataTransfer.files;  // 获取文件对象
         let fileList = [];
         for (let file in data) {
@@ -140,8 +145,6 @@
             fileList.push(data[file]['path'])
           }
         }
-        // console.log(typeof fileList);
-        // console.log(fileList);
         ipcRenderer.send('filter-file-type', fileList);
         ipcRenderer.once('filtered-file-type', (event, files) => {
           files.forEach((src) => {
@@ -154,10 +157,6 @@
                 })
                 this.cacheList.push(src)
                 this.cardId ++;
-                // 之所以把这个flag放到这里而不是循环外，
-                // 是因为只有图像格式的文件才能进入这个if，
-                // 只有这样才能把拖拽提示文字去掉。
-                this.tipFlag = false;
               }
             }
           })
@@ -168,6 +167,39 @@
         this.$store.dispatch('image/clearImages');
         // this.setDragTipSeenFlag(true);
         this.cardIndex = 0;
+      },
+      unsplash() {
+        const unsplash = new Unsplash({
+          applicationId: "de1dfd08d18e61f4074716e7204cddbfd5f52b5eb468222c66e2ef45f344d3ed",
+          secret: "e63d6039588ec784908ec260432d7ddbcca49273f05c050a5e799c2d7c6853b5"
+        })
+        unsplash.photos.getRandomPhoto()
+          .then(toJson)
+          .then(json => {
+            // console.log(json)
+            // console.log(json.urls.raw)
+            let srcList = []
+            this.$store.dispatch('image/addImage', {
+              id: this.cardId,
+              src: json.urls.raw,
+              done: true
+            })
+            this.cardId ++;
+          })
+      },
+      start() {
+        this.isRunning = true;
+        let file_list = []
+        this.images.forEach((image) => {
+          file_list.push(image.src)
+        })
+        console.log(this.crop_info)
+        ipcRenderer.send("crop", file_list, this.crop_info);
+
+        this.isRunning = false;
+      },
+      stop() {
+        this.isRunning = false;
       },
     },
   }

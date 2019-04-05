@@ -1,5 +1,6 @@
 import { app, ipcMain, dialog } from 'electron';
 import { EventEmitter } from 'events';
+const gm = require('gm').subClass({imageMagick: true});
 import fs from 'fs'
 import path from 'path'
 
@@ -115,9 +116,37 @@ export default class Application extends EventEmitter {
       event.sender.send('filtered-file-type', fileList);
     });
 
+    /* 读取指定文件并以base64编码的形式发送到ipcRenderer，已经用不到了
     ipcMain.on('read-image', (event, dir) => {
       let imageData = fs.readFileSync(dir);
       event.sender.send('base64-image', imageData.toString('base64'));
+    });
+    */
+    ipcMain.on('crop', (event, files, info) => {  // save_dir
+      let local_file = []
+      let save_dir = "C:\\Users\\Administrator\\桌面\\buper-output\\"
+      console.log(files)
+      console.log(info)
+      console.log('-------------------------')
+      files.forEach((file) => {  // 过滤网络图片
+        if (file.indexOf('http') !== 0) {
+          local_file.push(file)
+        }
+      })
+      console.log(local_file)
+      if (!fs.existsSync(save_dir)) {  // 判断输出路径是否存在
+        fs.mkdirSync(save_dir)
+      }
+      local_file.forEach((file) => {
+        let filename = file.split('\\')[file.split('\\').length-1].split('.')[0]
+        let extendname = file.split('\\')[file.split('\\').length-1].split('.')[1]
+        let new_image = save_dir+filename+'_1.'+extendname
+        console.log(file)
+        gm(file).crop(info.width, info.height, info.x, info.y).write(new_image, (err) => {
+          console.log(new_image)
+          console.error(err.message)
+        })
+      })
     })
   }
 }

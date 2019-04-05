@@ -36,6 +36,8 @@
 
 <script>
   import $ from 'jquery'
+  import 'popper.js'
+  import 'bootstrap'
   import Vue from 'vue'
   import { router, VueRouter } from 'vue-router'
   const ipcRenderer = require('electron')
@@ -64,7 +66,12 @@
         this.$router.push({path: '/chart'})
       },
     }
-  }
+  };
+(function () {
+    $().button('toggle')
+    $().button('dispose')
+  })
+  
 </script>
 
 <style>
@@ -77,7 +84,7 @@
     padding: 0;
     font-family: 等线,serif;
     background-color: #F8F9F9;
-    -webkit-app-region: no-drag;
+    /* -webkit-app-region: drag; */
   }
   ::-webkit-scrollbar {
     /* 隐藏滚动条，马勒个比 */

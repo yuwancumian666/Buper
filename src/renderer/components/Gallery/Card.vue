@@ -50,7 +50,7 @@
         </div>
         <div class="card-header-close" @click="removeCard($event)">&times;</div>
       </div>
-      <img class="card-img" v-bind:src="image.src" alt="Card image">
+      <img class="card-img" v-bind:src="image.src" alt="Card image" @click="edit">
     </div>
   </transition-group>
 </template>
@@ -58,7 +58,9 @@
 <script>
   import $ from 'jquery'
   import Vue from 'vue'
+  import { router, VueRouter } from 'vue-router'
   import { mapState ,mapActions } from 'vuex'
+import { ipcRenderer } from 'electron';
   export default {
     name: "card",
     computed: {
@@ -66,7 +68,6 @@
         images: state => state.images
       })
     },
-    props:['tip_flag'],
     methods: {
       ...mapActions([]),
       removeCard(event) {
@@ -74,11 +75,12 @@
         let index = Number(cardId.split('_')[1]);
         console.log(index);
         this.$store.dispatch('image/deleteImageById', index)
-        if (this.images.length === 0) {
-          this.$emit('get_tip_flag', true)
-          // this.$store.dispatch('image/setTipFlag', false)
-        }
       },
+      edit() {
+        let src = $(event.currentTarget).attr('src')
+        this.$store.dispatch('image/setCurrentImage', src)
+        this.$router.push({path: '/editor'})
+      }
     }
   }
 </script>
