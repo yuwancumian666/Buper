@@ -3,15 +3,15 @@
     <div id="menu">
       <!-- 上方按钮组 -->
       <div id="top-group" class="btn-group-vertical btn-group-toggle" data-toggle="buttons">
-        <label class="btn btn-dark active" @click="toGallery">
-          <input type="radio" name="options" id="option1" autocomplete="off" checked>
+        <label class="btn btn-dark active" @click="toGallery" ref="gallery">
+          <input type="radio" name="options" id="option1" autocomplete="off">
           <i class="fa fa-picture-o fa-lg" aria-hidden="true"></i>
         </label>
-        <label class="btn btn-dark" @click="toEditor">
+        <label class="btn btn-dark" @click="toEditor" ref="editor">
           <input type="radio" name="options" id="option2" autocomplete="off"> 
           <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>
         </label>
-        <label class="btn btn-dark" @click="toChart">
+        <label class="btn btn-dark" @click="toChart" ref="chart">
           <input type="radio" name="options" id="option3" autocomplete="off"> 
           <i class="fa fa-area-chart fa-lg" aria-hidden="true"></i>
         </label>
@@ -67,10 +67,10 @@
       },
     }
   };
-(function () {
-    $().button('toggle')
-    $().button('dispose')
-  })
+// (function () {
+//     $().button('toggle')
+//     $().button('dispose')
+//   })
   
 </script>
 
@@ -88,7 +88,8 @@
   }
   ::-webkit-scrollbar {
     /* 隐藏滚动条，马勒个比 */
-	  width: 0px;
+	  width: 0;
+    height: 0;
   }
 
   #menu {

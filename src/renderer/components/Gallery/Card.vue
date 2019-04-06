@@ -58,9 +58,10 @@
 <script>
   import $ from 'jquery'
   import Vue from 'vue'
+  import { ipcRenderer } from 'electron';
   import { router, VueRouter } from 'vue-router'
   import { mapState ,mapActions } from 'vuex'
-import { ipcRenderer } from 'electron';
+
   export default {
     name: "card",
     computed: {
@@ -80,6 +81,8 @@ import { ipcRenderer } from 'electron';
         let src = $(event.currentTarget).attr('src')
         this.$store.dispatch('image/setCurrentImage', src)
         this.$router.push({path: '/editor'})
+        this.$refs.gallery.classList.remove('active')
+        this.$refs.editor.classList.add('active')
       }
     }
   }

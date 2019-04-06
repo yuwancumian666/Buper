@@ -83,6 +83,7 @@
       undo() {
       },
       submit() {
+        console.log(this.$route.path)
         let box = document.getElementsByClassName("box")[0];
         let img = document.getElementById('img');
         let scaling_ratio = ((img.naturalWidth/img.width) + (img.naturalHeight/img.height))/2;
@@ -226,7 +227,9 @@
     text-align: center;
   }
   #img {
-    height: 100%;
+    /* height: 100%; */
+    max-width: 100%;
+    max-height: 100%;
     display: inline-block;
     text-align: center;
   }

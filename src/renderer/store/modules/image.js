@@ -50,15 +50,15 @@ const mutations = {
     state.images = [];
   },
   setCurrentImage (state, src) {
-    console.log(src)
+    // console.log(src)
     state.current_image = src;
   },
   removeCurrentImage (state) {
-    console.log("removed")
+    // console.log("removed")
     state.current_image = "";
   },
   setCropInfo (state, info) {
-    console.log(info)
+    // console.log(info)
     state.crop_info = info;
   }
 };
@@ -79,7 +79,7 @@ const actions = {
     commit('setCurrentImage', arg)
   },
   removeCurrentImage ({ commit }) {
-    console.log("remove")
+    // console.log("remove")
     commit('removeCurrentImage')
   },
   setCropInfo({ commit }, arg) {

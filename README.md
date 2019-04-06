@@ -13,7 +13,10 @@
 
 # 界面
 
-![界面预览](Buper-preview.jpg)
+## 相册界面
+![界面预览](preview/2019-04-06-buper-v1.0.0-gallery.jpg)
+## 编辑界面
+![编辑界面](preview/2019-04-06-buper-v1.0.0-editor.jpg)
 
 ---
 
