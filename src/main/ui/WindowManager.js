@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { EventEmitter } from 'events'
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, Menu } from 'electron'
 import is from 'electron-is'
 import pageConfig from '../config/page'
 
@@ -51,6 +51,7 @@ export default class WindowManager extends EventEmitter {
             window.focus();
             return window
         }
+        Menu.setApplicationMenu(null)
         window = new BrowserWindow({
                 ...defaultBrowserOptions,
                 ...options.attrs,

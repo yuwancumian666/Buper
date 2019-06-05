@@ -17,8 +17,8 @@ export default class Application extends EventEmitter {
 
     this.windowManager = new WindowManager();
 
-    this.menuManager = new MenuManager();
-    this.menuManager.setup();
+    // this.menuManager = new MenuManager();
+    // this.menuManager.setup();
     this.handleIpcMessages();
   }
 
@@ -134,17 +134,20 @@ export default class Application extends EventEmitter {
       if (!fs.existsSync(save_dir)) {  // 判断输出路径是否存在
         fs.mkdirSync(save_dir)
       }
-
+      let processed_images = []
       local_file.forEach((file) => {
         let filename = file.split('\\').pop()
         let new_image = path.join(save_dir, filename.replace('.', '_1.'))
-        
         gm(file).crop(info.width, info.height, info.x, info.y).write(new_image, (err) => {
           if (err) {
             console.error(err.message)
+          } else {
+            console.log("process " + file + " done.")
+            processed_images.push(file)
           }
         })
       })
+      event.sender.send("cropped", processed_images);
     })
   }
 }

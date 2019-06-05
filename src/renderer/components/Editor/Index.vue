@@ -3,13 +3,19 @@
     <!--副菜单栏：添加、保存、清空 -->
     <div id="sub-menu">
       <div id="cfg-menu" class="block">
-        <span>纵横比：</span>
-        <el-cascader
-          :options="options"
-          size="small"
-          v-model="selectedAspectRatio"
+        <span class="ratio-selector">纵横比：</span>
+        <el-select
+          class="ratio-selector"
+          size="medium"
+          v-model="aspectRatio"
           @change="selectAspectRatio">
-        </el-cascader>
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </div>
       
       <div id="edit-menu" class="btn-group" role="group" aria-label="Basic example">
@@ -39,9 +45,8 @@
     <!-- 画布 -->
     <div id="box"
       @mousedown.prevent="mouseDown($event)"
-      @mouseup.prevent="mouseUp($event)"
-    >
-      <img id="img" v-bind:src="current_image"/>
+      @mouseup.prevent="mouseUp($event)" >
+      <img id="img" v-bind:src="current_image" />
     </div>
   </div>
     
@@ -51,6 +56,7 @@
   const {ipcRenderer} =  require('electron');
   import $ from 'jquery'
   import { mapState } from 'vuex';
+import { connect } from 'net';
 
   export default {
     name: "editor",
@@ -62,7 +68,7 @@
           { value: "original", label: this.getAspectRatioFromImg(),},
           {value: "customize", label: "自定义",},
           {value: "square", label: "正方形",}],
-        selectedAspectRatio: ['original'],
+        aspectRatio: 'original',
         /** 选取框相关
          *  startX, startY 为鼠标点击时初始坐标
          * diffX, diffY 为鼠标初始坐标与 box 左上角坐标之差，用于拖动
@@ -87,6 +93,7 @@
         let box = document.getElementsByClassName("box")[0];
         let img = document.getElementById('img');
         let scaling_ratio = ((img.naturalWidth/img.width) + (img.naturalHeight/img.height))/2;
+        console.log(scaling_ratio)
         try {
           this.$store.dispatch('image/setCropInfo', {
             x: Math.round(Number(box.style.left.replace('px', '')) * scaling_ratio),
@@ -97,19 +104,21 @@
         } catch(err) {
           alert("你还没有标注出选框")
         }
-        
       },
       selectAspectRatio(value) {
         console.log(value)
       },
       getAspectRatioFromImg() {
+        // let img = document.getElementById('img');
+        // let scaling_ratio = ((img.naturalWidth/img.width) + (img.naturalHeight/img.height))/2;
         var wid = 1;
         this.width = 3;
         this.height = 2;
-          return '原始 - '+this.width+':'+this.height
+          return '原始 - '+0
       },
       removeCurrentImage() {
         this.$store.dispatch('image/removeCurrentImage')
+        this.$store.dispatch('image/setCropInfo', {})
       },
       // 选择框相关
       mouseDown(e) {
@@ -149,8 +158,10 @@
           if (document.getElementById("active_box") !== null) {
             active_box.style.left = (x2 > x1 ? x1 : x2) + 'px';
             active_box.style.top = (y2 > y1 ? y1 : y2) + 'px';
+
             active_box.style.width = Math.abs(x2-x1) + 'px';
-            active_box.style.height = Math.abs(y2-y1) + 'px';
+            active_box.style.height = Math.abs(x2-x1)*2/3 + 'px';  // Math.abs(y2-y1)
+
             active_box.style.position = "absolute";
             active_box.style.backgroundColor = "#CCFFFF";
             active_box.style.border = "1px solid #0099FF";
@@ -197,10 +208,13 @@
     z-index: 1;
   }
   #cfg-menu {
-    font-size: 14px;
-    position: absolute;
-    margin-top: 9px;
-    margin-left: 10px;
+    font: 15px;
+    position: relative;
+    top: 7px;
+    left: 10px;
+  }
+  .ratio-selector {
+    font:bold 15px 微软雅黑;
   }
   #edit-menu {
     position: absolute;

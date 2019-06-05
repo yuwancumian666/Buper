@@ -1,3 +1,5 @@
+import { stat } from 'fs-extra-p';
+import { Store } from 'vuex';
 
 const Vue = require('vue')
 
@@ -34,52 +36,53 @@ const getters = {
 
 const mutations = {
   addImage (state, image) {
-    // console.log("image: " + image.id+", "+image.src + ", "+image.done)
     state.images.push(image)
   },
   deleteImageById (state, id) {
     state.images.splice(state.images.findIndex(item => item.id === id), 1)
   },
-  setImageDoneById (state, id) {
-    let img = getters.getImageById(id);
-    let index = state.images.indexOf(img);
+  setImageDoneByIndex (state, {index, img}) {
     img.done = true;
-    Vue.set(state.images, index, img);
+    state.images.splice(index, 1, img)
   },
   clearImages (state) {
     state.images = [];
   },
   setCurrentImage (state, src) {
-    // console.log(src)
     state.current_image = src;
   },
   removeCurrentImage (state) {
-    // console.log("removed")
     state.current_image = "";
   },
   setCropInfo (state, info) {
-    // console.log(info)
     state.crop_info = info;
   }
 };
 
 const actions = {
   addImage ({ commit }, arg) {
-    // console.log("arg: " + arg)
     commit('addImage', arg)
   },
   deleteImageById ({ commit }, arg) {
     commit('deleteImageById', arg)
   },
+  setImageDoneById ({ commit, state, getters }, id) {
+    let img = getters.getImageById(id);
+    let index = state.images.indexOf(img);
+    commit('setImageDoneByIndex', {index, img})
+  },
+  setImageDoneBySrc ({ commit, state, getters }, src) {
+    let img = getters.getImageBySrc(src);
+    let index = state.images.indexOf(img);
+    commit('setImageDoneByIndex', {index, img})
+  },
   clearImages ({ commit }) {
-    // console.log("clear action")
     commit('clearImages')
   },
   setCurrentImage ({ commit }, arg) {
     commit('setCurrentImage', arg)
   },
   removeCurrentImage ({ commit }) {
-    // console.log("remove")
     commit('removeCurrentImage')
   },
   setCropInfo({ commit }, arg) {

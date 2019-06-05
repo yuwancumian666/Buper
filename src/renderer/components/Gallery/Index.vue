@@ -128,7 +128,7 @@
               this.$store.dispatch('image/addImage', {
                 id: this.cardId,
                 src: src,
-                flag: false
+                done: false
               })
               this.cacheList.push(src)
               this.cardId ++;
@@ -153,7 +153,7 @@
                 this.$store.dispatch('image/addImage', {
                   id: this.cardId,
                   src: src,
-                  flag: false
+                  done: false
                 })
                 this.cacheList.push(src)
                 this.cardId ++;
@@ -189,14 +189,22 @@
       },
       start() {
         this.isRunning = true;
-        let file_list = []
-        this.images.forEach((image) => {
-          file_list.push(image.src)
-        })
-        console.log(this.crop_info)
-        ipcRenderer.send("crop", file_list, this.crop_info);
-
-        this.isRunning = false;
+        if(this.images.length !== 0) {
+          let file_list = []
+          this.images.forEach((image) => {
+            file_list.push(image.src)
+          })
+          console.log(this.crop_info)
+          ipcRenderer.sendSync("crop", file_list, this.crop_info);
+          ipcRenderer.once("cropped", (event, cropped_images) => {
+            cropped_images.forEach((image) => {
+              console.log(image)
+            })
+          })
+        } else {
+          alert("Add an image before clicking the button.")
+        }
+        // this.isRunning = false;
       },
       stop() {
         this.isRunning = false;

@@ -32,10 +32,10 @@
     <div v-for="image in images"
          :key="image.id"
          class="card bg-light list-complete-item"
-         v-bind:id="'card_'+image.id"
+         v-bind:id="image.id"
     >
       <div class="card-header bg-transparent border-success">
-        <div class="card-header-check">
+        <div class="card-header-check" @click="testDone($event)">
           <el-tooltip class="item" effect="dark" content="已处理" placement="bottom">
             <i class="fa fa-smile-o text-success" aria-hidden="true" v-show="image.done"></i>
           </el-tooltip>
@@ -73,16 +73,22 @@
       ...mapActions([]),
       removeCard(event) {
         let cardId = $(event.currentTarget).parent().parent().attr('id');
-        let index = Number(cardId.split('_')[1]);
+        let index = Number(cardId);
         console.log(index);
         this.$store.dispatch('image/deleteImageById', index)
       },
-      edit() {
+      edit(event) {
         let src = $(event.currentTarget).attr('src')
         this.$store.dispatch('image/setCurrentImage', src)
         this.$router.push({path: '/editor'})
-        this.$refs.gallery.classList.remove('active')
-        this.$refs.editor.classList.add('active')
+        // this.$refs.gallery.classList.remove('active')
+        // this.$refs.editor.classList.add('active')
+      },
+      testDone(event) {
+        let cardId = $(event.currentTarget).parent().parent().attr('id');
+        let img_src = $(event.currentTarget).parent().next().attr('src')
+        // this.$store.dispatch('image/setImageDoneById', Number(cardId))
+        this.$store.dispatch('image/setImageDoneBySrc', img_src)
       }
     }
   }
@@ -165,5 +171,8 @@
     background-color: #C2185B;
     color: #FFFFFF;
     border-radius: 0 6px;
+  }
+  img {
+    cursor: pointer;
   }
 </style>
