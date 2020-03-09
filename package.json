@@ -1,7 +1,7 @@
 {
   "name": "buper",
   "version": "0.2.1",
-  "author": "yuwancumian666 <2506930314@qq.com>",
+  "author": "moeext <2506930314@qq.com>",
   "description": "A batch image cropping application.",
   "license": "MIT",
   "main": "./dist/electron/main.js",
@@ -21,7 +21,7 @@
   },
   "build": {
     "productName": "Buper",
-    "appId": "com.yuwancumian666.buper",
+    "appId": "com.moeext.buper",
     "directories": {
       "output": "release"
     },
