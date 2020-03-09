@@ -67,7 +67,6 @@
     }
   },
   "dependencies": {
-    "axios": "^0.18.0",
     "bootstrap": "4.3.1",
     "echarts": "^4.2.1",
     "element-ui": "2.4.11",
@@ -85,6 +84,7 @@
   },
   "devDependencies": {
     "ajv": "^6.5.0",
+    "axios": "^0.18.1",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-plugin-istanbul": "^4.1.6",

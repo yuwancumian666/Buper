@@ -119,6 +119,10 @@ let rendererConfig = {
         removeAttributeQuotes: true,
         removeComments: true
       },
+      // ↓ 2020-03-10 https://github.com/SimulatedGREG/electron-vue/issues/871#issuecomment-529809406
+      isBrowser: false,
+      isDevelopment: process.env.NODE_ENV !== 'production',
+      // ↑ 2020-03-10 https://github.com/SimulatedGREG/electron-vue/issues/871#issuecomment-529809406
       nodeModules: process.env.NODE_ENV !== 'production'
         ? path.resolve(__dirname, '../node_modules')
         : false

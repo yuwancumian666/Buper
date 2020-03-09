@@ -21,11 +21,6 @@ export default new Router({
           name: 'editor',
           component: require('@/components/Editor/Index').default,
         },
-        {
-          path: 'chart',
-          name: 'chart',
-          component: require('@/components/Chart/Index').default,
-        }
       ]
     },
     {

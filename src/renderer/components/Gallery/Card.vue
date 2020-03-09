@@ -1,33 +1,4 @@
 <template>
-  <!-- 自己设置的卡片组，
-            在 ↑ #gallery(id名)没有使用.card-columns(类名)的时候图片的定位有问题：
-            宽>高 => 图片不能居中
-            高>宽 => 图片突破容器高度，向下伸出一大截。
-            现在↑ #gallery div 设置了.card-columns后，状态和原生的差不多了，图片就多个padding，显示的小一点
-           -->
-  <!--<div v-bind:id="'card_'+generateId(index1)" class="card bg-light" v-for="(i, index1) in image_array.length" :key="index1">-->
-  <!--<div class="card-header bg-transparent border-success bg-dark">-->
-  <!--<div class="card-header-check">-->
-  <!--<el-tooltip class="item" effect="dark" content="已处理" placement="bottom">-->
-  <!--<i class="fa fa-smile-o text-success" aria-hidden="true" v-show="cardHeaderCheck"></i>-->
-  <!--</el-tooltip>-->
-  <!--<el-tooltip class="item" effect="dark" content="未处理" placement="bottom">-->
-  <!--<i class="fa fa-meh-o text-warning" aria-hidden="true" v-show="!cardHeaderCheck"></i>-->
-  <!--</el-tooltip>-->
-  <!--</div>-->
-  <!--<div class="card-header-save">-->
-  <!--<el-tooltip class="item" effect="dark" content="保存" placement="bottom">-->
-  <!--<i class="el-icon-download"></i>-->
-  <!--</el-tooltip>-->
-  <!--</div>-->
-  <!--<div class="card-header-close">-->
-  <!--&times;-->
-  <!--</div>-->
-  <!--</div>-->
-  <!--<div class="card-body">-->
-  <!--<img class="card-img" v-bind:src="generateCardImgSrc(index1)" alt="Card image">-->
-  <!--</div>-->
-  <!--</div>-->
   <transition-group name="list-complete" tag="div">
     <div v-for="image in images"
          :key="image.id"

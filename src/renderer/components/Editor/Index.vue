@@ -119,6 +119,7 @@ import { connect } from 'net';
       removeCurrentImage() {
         this.$store.dispatch('image/removeCurrentImage')
         this.$store.dispatch('image/setCropInfo', {})
+        this.$router.push({path: '/gallery'})
       },
       // 选择框相关
       mouseDown(e) {
@@ -160,7 +161,7 @@ import { connect } from 'net';
             active_box.style.top = (y2 > y1 ? y1 : y2) + 'px';
 
             active_box.style.width = Math.abs(x2-x1) + 'px';
-            active_box.style.height = Math.abs(x2-x1)*2/3 + 'px';  // Math.abs(y2-y1)
+            active_box.style.height = Math.abs(y2-y1) + 'px';  // Math.abs(y2-y1)
 
             active_box.style.position = "absolute";
             active_box.style.backgroundColor = "#CCFFFF";

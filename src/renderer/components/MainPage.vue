@@ -11,10 +11,6 @@
           <input type="radio" name="options" id="option2" autocomplete="off"> 
           <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>
         </label>
-        <label class="btn btn-dark" @click="toChart" ref="chart">
-          <input type="radio" name="options" id="option3" autocomplete="off"> 
-          <i class="fa fa-area-chart fa-lg" aria-hidden="true"></i>
-        </label>
       </div>
 
       <!-- 下方按钮组：设置&关于 -->
@@ -43,10 +39,6 @@
   const ipcRenderer = require('electron')
   
 
-  // import Gallery from "./Gallery/Index.vue"
-  // import Editor from "./Editor/Index.vue"
-  // import Chart from "./Chart/Index.vue"
-
   export default {
     name: 'main-page',
     methods: {
@@ -61,9 +53,6 @@
       },
       toEditor() {
         this.$router.push({path: '/editor'})
-      },
-      toChart() {
-        this.$router.push({path: '/chart'})
       },
     }
   };
